@@ -1,0 +1,36 @@
+name: Competitor Monitor
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Runs every 30 minutes
+  workflow_dispatch:  # Lets you test run it manually anytime
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Load previous seen items
+        uses: actions/cache@v4
+        with:
+          path: seen_items.json
+          key: seen-items-${{ github.run_id }}
+          restore-keys: seen-items-
+
+      - name: Run monitor
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ALERT_FEED_1: ${{ secrets.ALERT_FEED_1 }}
+          ALERT_FEED_2: ${{ secrets.ALERT_FEED_2 }}
+          ALERT_FEED_3: ${{ secrets.ALERT_FEED_3 }}
+        run: python monitor.py --once
