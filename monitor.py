@@ -1,19 +1,3 @@
-"""
-Win786 Competitor Monitor v2.0
-==============================
-Monitors 786win.pk for new backlinks, mentions, and activity.
-Sends alerts to Telegram when new items are discovered.
-
-Data Sources:
-  1. Google Alerts RSS (user-configured feeds)
-  2. CommonCrawl Index API (new pages linking to competitor)
-  3. Wayback Machine CDX API (new URLs mentioning competitor)
-  4. Reddit JSON search (public, no auth needed)
-  5. Google Custom Search JSON API (new web mentions)
-
-Deployment: GitHub Actions (cron every 30 min via --once flag)
-"""
-
 import requests
 import feedparser
 import time
