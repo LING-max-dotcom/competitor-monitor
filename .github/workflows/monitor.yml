@@ -2,24 +2,26 @@ name: Competitor Monitor
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Runs every 30 minutes
-  workflow_dispatch:  # Lets you test run it manually anytime
+    - cron: '0 */6 * * *'  # Every 6 hours (4x per day — free tier friendly)
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Load previous seen items
+      - name: Restore seen items cache
         uses: actions/cache@v4
         with:
           path: seen_items.json
@@ -33,4 +35,6 @@ jobs:
           ALERT_FEED_1: ${{ secrets.ALERT_FEED_1 }}
           ALERT_FEED_2: ${{ secrets.ALERT_FEED_2 }}
           ALERT_FEED_3: ${{ secrets.ALERT_FEED_3 }}
+          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
         run: python monitor.py --once
